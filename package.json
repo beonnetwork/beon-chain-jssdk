@@ -1,0 +1,24 @@
+{
+  "name": "beon-chain-jssdk",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/beonnetwork/beon-chain-jssdk.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/beonnetwork/beon-chain-jssdk/issues"
+  },
+  "homepage": "https://github.com/beonnetwork/beon-chain-jssdk#readme",
+  "dependencies": {
+    "ethereumjs-util": "^5.2.0",
+    "jayson": "^2.0.6",
+    "web3": "^1.0.0-beta.34"
+  }
+}
