@@ -91,6 +91,32 @@ class BeOnSDK {
     return result;
   }
 
+  async mintToken({
+    account,
+    key
+  }, {
+    tokenAddress,
+    to,
+    amount,
+  }) {
+    let BrandedToken = new this.web3.eth.Contract(
+      BrandedTokenArtifacts.abi, tokenAddress
+    );
+
+    amount = Web3.utils.toBN(Web3.utils.toWei("" + amount, "ether"));
+    // let nonce = await this.web3.eth.getTransactionCount(account);
+    let result = await this._signedAndSubmit({
+      from: account,
+      // nonce: nonce,
+      gas: this.config.gas,
+      gasPrice: this.config.gasPrice,
+      to: BrandedToken.options.address,
+      data: BrandedToken.methods.mint(to, amount).encodeABI(),
+    }, key);
+
+    return result;
+  }
+
   async deposit({
     account,
     key
@@ -112,7 +138,7 @@ class BeOnSDK {
       );
       let from = account;
       let result = await BrandedToken.methods
-        .approve(this.RootChain.options.address, utils.etherToWei(amount))
+        .approve(this.RootChain.options.address, Web3.utils.toWei("" + amount, "ether"))
         .send({
           from
         });
