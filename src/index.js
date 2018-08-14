@@ -52,6 +52,10 @@ class BeOnSDK {
   }
 
   async getBalances(address) {
+    if(!address){
+      throw "address is not provided"
+    }
+    let address = address.toLowerCase();
     let response = await this.client.request("getUTXOsByAddress", {
       address,
     }).catch(err => {
