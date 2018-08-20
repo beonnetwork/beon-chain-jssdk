@@ -182,6 +182,9 @@ class BeOnSDK {
     });
 
     let json = response.result.result;
+    if(!json){
+      throw "Invalid transaction";
+    }
     let tx = Transaction.fromJSON(json);
 
     // let prefix = "\x19Ethereum Signed Message:\n32";
@@ -202,7 +205,7 @@ class BeOnSDK {
     let blkNum;
     let root;
     let nTries = 0;
-    while (found < 0 && nTries < 3) {
+    while (found < 0 && nTries < 10) {
       await utils.sleep(1000);
       // get latest block
       response = await this.client.request("getLatestBlock", {}).catch(err => {
@@ -221,7 +224,7 @@ class BeOnSDK {
       nTries += 1;
     }
     if (found < 0) {
-      throw "Transaction not found or has yet been mined";
+      throw "Transaction to confirm is not found or has yet been mined. This could mean that the transaction is not valid or insufficient balance.";
     }
     let txIndex = found;
 

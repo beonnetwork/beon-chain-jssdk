@@ -1,6 +1,6 @@
 {
   "name": "@beon/jssdk",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "JS SDK to interact with BeOn plasma chain",
   "main": "src/index.js",
   "scripts": {
