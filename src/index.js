@@ -16,14 +16,16 @@ class BeOnSDK {
     networkId,
     provider,
     gas,
-    gasPrice
+    gasPrice,
+    contractAddressOfBrandedTokenFactory
   }) {
     this.config = {
       host,
       networkId,
       provider,
       gas,
-      gasPrice
+      gasPrice,
+      contractAddressOfBrandedTokenFactory
     };
     if (this.config.host.indexOf("https") >= 0) {
       this.client = jayson.client.https(this.config.host);
@@ -34,7 +36,7 @@ class BeOnSDK {
 
     this.BrandedTokenFactory = new this.web3.eth.Contract(
       BrandedTokenFactoryArtifacts.abi,
-      BrandedTokenFactoryArtifacts.networks[this.config.networkId].address
+      this.config.contractAddressOfBrandedTokenFactory || BrandedTokenFactoryArtifacts.networks[this.config.networkId].address
     );
   }
 

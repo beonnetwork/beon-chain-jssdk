@@ -49,7 +49,7 @@ const bufferToHex = (buf, withPrefix = true) => {
  * @param {number} amount the amount in wei
  */
 const weiToEther = (amount) => {
-    return amount / 1000000000000000000;
+    return +amount / 1000000000000000000;
 };
 
 /**
@@ -57,7 +57,7 @@ const weiToEther = (amount) => {
  * @param {number} amount the amount in ether
  */
 const etherToWei = (amount) => {
-    return amount * 1000000000000000000;
+    return Web3.utils.toWei("" + amount, "ether")
 };
 
 /**
@@ -75,6 +75,9 @@ const concatHex = (...hexStrings) => {
 }
 
 const numToStr = function (x) {
+    if(typeof(x) != 'string'){
+        return x;
+    }
     x = +x;
     if (Math.abs(x) < 1.0) {
         var e = parseInt(x.toString().split('e-')[1]);

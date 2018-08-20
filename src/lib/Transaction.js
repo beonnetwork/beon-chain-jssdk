@@ -4,6 +4,8 @@ const RLP = require('rlp');
 const Web3 = require('web3');
 const Block = require('./Block');
 const utils = require("./utils");
+const BN = Web3.utils.BN;
+const isBN = Web3.utils.isBN;
 
 /**
  * Transaction
@@ -36,10 +38,10 @@ class Transaction {
    * @param {number} oIndex2 output index 2
    * @param {string} sig2 signature 2
    * @param {string} newOwner1 new owner 1
-   * @param {number} denom1 amount 1 
+   * @param {string} denom1 amount 1 
    * @param {string} newOwner2 new owner 2
-   * @param {number} denom2 amount 2
-   * @param {number} fee fee
+   * @param {string} denom2 amount 2
+   * @param {string} fee fee
    * @param {TxType} type type of transaction
    * @param {string} token token address
    */
@@ -60,11 +62,11 @@ class Transaction {
 
     // outputs
     this.newOwner1 = newOwner1 ? newOwner1.toLowerCase() : newOwner1;
-    this.denom1 = +denom1;
+    this.denom1 = isBN(denom1) ? denom1 : new BN(""+denom1);
     this.newOwner2 = newOwner2 ? newOwner2.toLowerCase() : newOwner2;
-    this.denom2 = +denom2;
+    this.denom2 = isBN(denom2) ? denom2 : new BN(""+denom2);
+    this.fee = isBN(fee) ? fee : new BN(""+fee);
 
-    this.fee = +fee;
     this.type = type;
     if (!token || token == "0x0") {
       token = "0x0000000000000000000000000000000000000000";
@@ -189,10 +191,10 @@ class Transaction {
       oIndex2: this.oIndex2,
       sig2: this.sig2,
       newOwner1: this.newOwner1,
-      denom1: utils.numToStr(this.denom1),
+      denom1: this.denom1.toString(),
       newOwner2: this.newOwner2,
-      denom2: utils.numToStr(this.denom2),
-      fee: utils.numToStr(this.fee),
+      denom2: this.denom2.toString(),
+      fee: this.fee.toString(),
       type: this.type,
       token: this.token,
       timestamp: this.timestamp,
