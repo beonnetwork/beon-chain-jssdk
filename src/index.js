@@ -5,7 +5,7 @@ const Web3 = require("web3");
 
 const BrandedTokenFactoryArtifacts = require("./contracts/BrandedTokenFactory.json");
 const BrandedTokenArtifacts = require("./contracts/BrandedToken.json");
-// const RootChainArtifacts = require("./contracts/RootChain.json");
+const RootChainArtifacts = require("./contracts/RootChain.json");
 const utils = require("./lib/utils");
 const Block = require("./lib/Block");
 const Transaction = require("./lib/Transaction");
@@ -17,7 +17,8 @@ class BeOnSDK {
     provider,
     gas,
     gasPrice,
-    contractAddressOfBrandedTokenFactory
+    contractAddressOfBrandedTokenFactory,
+    contractAddressOfRootChain
   }) {
     this.config = {
       host,
@@ -25,7 +26,8 @@ class BeOnSDK {
       provider,
       gas,
       gasPrice,
-      contractAddressOfBrandedTokenFactory
+      contractAddressOfBrandedTokenFactory,
+      contractAddressOfRootChain
     };
     if (this.config.host.indexOf("https") >= 0) {
       this.client = jayson.client.https(this.config.host);
@@ -37,6 +39,11 @@ class BeOnSDK {
     this.BrandedTokenFactory = new this.web3.eth.Contract(
       BrandedTokenFactoryArtifacts.abi,
       this.config.contractAddressOfBrandedTokenFactory || BrandedTokenFactoryArtifacts.networks[this.config.networkId].address
+    );
+
+    this.RootChain = new this.web3.eth.Contract(
+      RootChainArtifacts.abi,
+      this.config.contractAddressOfRootChain || RootChainArtifacts.networks[this.config.networkId].address
     );
   }
 
