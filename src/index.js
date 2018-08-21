@@ -65,7 +65,7 @@ class BeOnSDK {
     if (!address) {
       throw "address is not provided"
     }
-    let address = address.toLowerCase();
+    address = address.toLowerCase();
     let response = await this.client.request("getUTXOsByAddress", {
       address,
     }).catch(err => {
