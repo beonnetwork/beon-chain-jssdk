@@ -20,6 +20,7 @@ class BeOnSDK {
     contractAddressOfBrandedTokenFactory,
     contractAddressOfRootChain
   }) {
+    gasPrice = gasPrice || 20000000000;
     this.config = {
       host,
       networkId,
@@ -61,7 +62,7 @@ class BeOnSDK {
   }
 
   async getBalances(address) {
-    if(!address){
+    if (!address) {
       throw "address is not provided"
     }
     let address = address.toLowerCase();
@@ -91,8 +92,8 @@ class BeOnSDK {
     if (!this.BrandedTokenFactory) {
       return;
     }
-    
-    initialAmount = Web3.utils.toBN(Web3.utils.toWei(Web3.utils.toBN(initialAmount), "ether"));
+
+    initialAmount = Web3.utils.toBN(Web3.utils.toWei("" + initialAmount, "ether"));
     // let nonce = await this.web3.eth.getTransactionCount(account);
     let result = await this._signedAndSubmit({
       from: account,
@@ -119,7 +120,7 @@ class BeOnSDK {
       BrandedTokenArtifacts.abi, tokenAddress
     );
 
-    amount = Web3.utils.toBN(Web3.utils.toWei(Web3.utils.toBN(amount), "ether"));
+    amount = Web3.utils.toBN(Web3.utils.toWei("" + amount, "ether"));
     // let nonce = await this.web3.eth.getTransactionCount(account);
     let result = await this._signedAndSubmit({
       from: account,
@@ -141,6 +142,8 @@ class BeOnSDK {
     token,
     amount
   }) {
+    let nonce = await this.web3.eth.getTransactionCount(account);
+
     if (
       token !== "0x0" &&
       token !== "0x0000000000000000000000000000000000000000" &&
@@ -149,18 +152,25 @@ class BeOnSDK {
       // Token address
       let BrandedToken = new this.web3.eth.Contract(
         BrandedTokenArtifacts.abi,
-        token, {
-          gas: this.config.gas,
-        },
+        token
       );
       let from = account;
       // amount is converted to wei here since we send directly to the token contract
-      amount = Web3.utils.toBN(Web3.utils.toWei(Web3.utils.toBN(amount), "ether"));
-      let result = await BrandedToken.methods
-        .approve(this.RootChain.options.address, amount)
-        .send({
-          from
-        });
+      let approveAmount = Web3.utils.toBN(Web3.utils.toWei("" + amount, "ether"));
+
+      let txHash = await this._signedAndSubmit({
+        from: from,
+        nonce: nonce,
+        gas: this.config.gas,
+        gasPrice: this.config.gasPrice,
+        to: BrandedToken.options.address,
+        data: BrandedToken.methods
+          .approve(this.RootChain.options.address, approveAmount)
+          .encodeABI()
+      }, key);
+      nonce += 1
+      console.log("txHash", txHash);
+
     }
     let address = account;
     // amount will be converted to wei on the chain node
@@ -172,6 +182,7 @@ class BeOnSDK {
       throw err;
     });
     let json = response.result.result;
+    json.nonce = nonce;
     return this._signedAndSubmit(json, key);
   }
 
@@ -197,7 +208,7 @@ class BeOnSDK {
     });
 
     let json = response.result.result;
-    if(!json){
+    if (!json) {
       throw "Invalid transaction";
     }
     let tx = Transaction.fromJSON(json);
@@ -220,8 +231,8 @@ class BeOnSDK {
     let blkNum;
     let root;
     let nTries = 0;
-    while (found < 0 && nTries < 10) {
-      await utils.sleep(1000);
+    while (found < 0 && nTries < 20) {
+      await utils.sleep(500);
       // get latest block
       response = await this.client.request("getLatestBlock", {}).catch(err => {
         throw err;
