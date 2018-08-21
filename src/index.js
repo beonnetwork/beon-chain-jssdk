@@ -78,6 +78,7 @@ class BeOnSDK {
     return this.web3.eth.getTransactionCount(account);
   }
 
+  // amount is string in ether unit
   async createToken({
     account,
     key
@@ -90,7 +91,8 @@ class BeOnSDK {
     if (!this.BrandedTokenFactory) {
       return;
     }
-    initialAmount = this.web3.utils.toBN(initialAmount);
+    
+    initialAmount = Web3.utils.toBN(Web3.utils.toWei(Web3.utils.toBN(initialAmount), "ether"));
     // let nonce = await this.web3.eth.getTransactionCount(account);
     let result = await this._signedAndSubmit({
       from: account,
@@ -104,6 +106,7 @@ class BeOnSDK {
     return result;
   }
 
+  // amount is string in ether unit
   async mintToken({
     account,
     key
@@ -116,7 +119,7 @@ class BeOnSDK {
       BrandedTokenArtifacts.abi, tokenAddress
     );
 
-    amount = Web3.utils.toBN(Web3.utils.toWei("" + amount, "ether"));
+    amount = Web3.utils.toBN(Web3.utils.toWei(Web3.utils.toBN(amount), "ether"));
     // let nonce = await this.web3.eth.getTransactionCount(account);
     let result = await this._signedAndSubmit({
       from: account,
@@ -130,6 +133,7 @@ class BeOnSDK {
     return result;
   }
 
+  // amount is string in ether unit
   async deposit({
     account,
     key
@@ -150,13 +154,16 @@ class BeOnSDK {
         },
       );
       let from = account;
+      // amount is converted to wei here since we send directly to the token contract
+      amount = Web3.utils.toBN(Web3.utils.toWei(Web3.utils.toBN(amount), "ether"));
       let result = await BrandedToken.methods
-        .approve(this.RootChain.options.address, Web3.utils.toWei("" + amount, "ether"))
+        .approve(this.RootChain.options.address, amount)
         .send({
           from
         });
     }
     let address = account;
+    // amount will be converted to wei on the chain node
     let response = await this.client.request("deposit", {
       address,
       token,
@@ -168,6 +175,7 @@ class BeOnSDK {
     return this._signedAndSubmit(json, key);
   }
 
+  // amount is string in ether unit
   async transfer({
     account,
     key
